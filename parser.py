@@ -38,7 +38,7 @@ def parser() :
     nb_of_piece = 0
     grid = []
     size_of_grid = 0
-    if len(sys.argv) == 2:
+    if 2 <= len(sys.argv) <= 3:
         filename = sys.argv[1]
     else:
         print ("Error : please give one filename in argv")

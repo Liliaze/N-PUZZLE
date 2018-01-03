@@ -7,7 +7,7 @@ import algo
 import heuristic
 import sys
 import checkIsSolvable
-
+from window import Window
 
 
 # Classe principale de projet
@@ -37,13 +37,21 @@ class Solver:
 		["Out Of Row And Column", heuristic.outOfRowAndColumn],
 		["Manhattan Distance + Linear Conflict", heuristic.manhattanLinearConflict]
 		]
-	
+
+
 	def __init__(self, parser):
 #		self.nn_manhattan = Network(9, [9, 9], 1)
 #		self.nn_manhattan.load("NN_manhattan_9x9_10x4000")
 		self.nn_uniform = Network(9, [36, 18, 9], 1)
 		self.nn_uniform.load("neural_network/network_save/uniform_36x18x9_5500_mix")
-		msg = """\033[1;31m
+		Node.solver = self
+		State.solver = self
+		self.parser = parser
+		self.window = Window(self.algoList, self.heuristicList)
+		self.getDistance = algo.getDistanceAstar
+	
+	def sayHello(self):
+		msg = """\033[1;35m
 		╦ ╦╔═╗╦  ╔═╗╔═╗╔╦╗╔═╗    ╦╔╗╔    ╔╗╔   ╔═╗╦ ╦╔═╗╔═╗╦  ╔═╗ 
 		║║║║╣ ║  ║  ║ ║║║║║╣     ║║║║    ║║║───╠═╝║ ║╔═╝╔═╝║  ║╣  
 		╚╩╝╚═╝╩═╝╚═╝╚═╝╩ ╩╚═╝    ╩╝╚╝    ╝╚╝   ╩  ╚═╝╚═╝╚═╝╩═╝╚═╝ 
@@ -51,34 +59,34 @@ class Solver:
 		╠╩╗╚╦╝    ║║║║╣ ╠╦╝║  ║║║║    ╠═╣║║║ ║║     ║║║╠═╣║║║╠═╣
 		╚═╝ ╩     ╩ ╩╚═╝╩╚═╩═╝╩╝╚╝    ╩ ╩╝╚╝═╩╝    ═╩╝╩╩ ╩╝╚╝╩ ╩
 		\033[m"""
-		print(msg)
-		Node.solver = self
-		State.solver = self
-		self.parser = parser
-		self.getDistance = algo.getDistanceAstar
-
+		return msg
+	
 	def sayGoodbye(self):
 		msg = """\033[1;36m
-╔═╗╔═╗╔═╗╔╦╗  ╔╗ ╦ ╦╔═╗  ╔═╗╔╗╔╔╦╗  ╔╦╗╔═╗╦═╗╦═╗╦ ╦  ╔═╗╦ ╦╦═╗╦╔═╗╔╦╗╔╦╗╔═╗╔═╗
-║ ╦║ ║║ ║ ║║  ╠╩╗╚╦╝║╣   ╠═╣║║║ ║║  ║║║║╣ ╠╦╝╠╦╝╚╦╝  ║  ╠═╣╠╦╝║╚═╗ ║ ║║║╠═╣╚═╗
-╚═╝╚═╝╚═╝═╩╝  ╚═╝ ╩ ╚═╝  ╩ ╩╝╚╝═╩╝  ╩ ╩╚═╝╩╚═╩╚═ ╩   ╚═╝╩ ╩╩╚═╩╚═╝ ╩ ╩ ╩╩ ╩╚═╝
-     *                                                          *
-                                  *                  *        .--.
-      \/ \/  \/  \/                                        ./   /=*
-        \/     \/      *            *                ...  (_____)
-         \ ^ ^/                                       \ \_((^o^))-.    *
-         (o)(O)--)--------\.                           \   (   ) \ \._.
-         |    |  ||================((~~~~~~~~~~~~~~~~~))|   ( )   |    \ 
-          \__/             ,|        \. * * * * * * ./  (~~~~~~~~~~)    \ 
-          *        ||^||\.____./|| |          \___________/     ~||~~~~|~'\____/ *
-            || ||     || || A            ||    ||         ||    |   
-     *      <> <>     <> <>          (___||____||_____)  ((~~~~~|   *
+	╔═╗╔═╗╔═╗╔╦╗  ╔╗ ╦ ╦╔═╗  ╔═╗╔╗╔╔╦╗  ╔╦╗╔═╗╦═╗╦═╗╦ ╦  ╔═╗╦ ╦╦═╗╦╔═╗╔╦╗╔╦╗╔═╗╔═╗
+	║ ╦║ ║║ ║ ║║  ╠╩╗╚╦╝║╣   ╠═╣║║║ ║║  ║║║║╣ ╠╦╝╠╦╝╚╦╝  ║  ╠═╣╠╦╝║╚═╗ ║ ║║║╠═╣╚═╗
+	╚═╝╚═╝╚═╝═╩╝  ╚═╝ ╩ ╚═╝  ╩ ╩╝╚╝═╩╝  ╩ ╩╚═╝╩╚═╩╚═ ╩   ╚═╝╩ ╩╩╚═╩╚═╝ ╩ ╩ ╩╩ ╩╚═╝
+	 *                                                          *
+	                              *                  *        .--.
+	  \/ \/  \/  \/                                        ./   /=*
+	    \/     \/      *            *                ...  (_____)
+	     \ ^ ^/                                       \ \_((^o^))-.    *
+	     (o)(O)--)--------\.                           \   (   ) \ \._.
+	     |    |  ||================((~~~~~~~~~~~~~~~~~))|   ( )   |    \ 
+	      \__/             ,|        \. * * * * * * ./  (~~~~~~~~~~)    \ 
+	      *        ||^||\.____./|| |          \___________/     ~||~~~~|~'\____/ *
+	        || ||     || || A            ||    ||         ||    |   
+	 *      <> <>     <> <>          (___||____||_____)  ((~~~~~|   *
 		\033[m"""
-		print (msg)
+		return msg
 	
-	def askConfig(self):
-		self.algo, needHeuristic = self.askAlgo()
-		self.heuristic = self.askHeuristic(needHeuristic)
+	def askConfig(self, interface):
+		if not interface:
+			self.algo, needHeuristic = self.askAlgo()
+			self.heuristic = self.askHeuristic(needHeuristic)
+		else:
+			self.algoNb, self.heuristicNb = self.window.askConfigI()
+			self.algo, self.heuristic = self.algoList[self.algoNb][1], self.heuristicList[self.heuristicNb][1]
 	
 	def askAlgo(self):
 		print("Choose your Algorrithm :")
@@ -185,30 +193,33 @@ class Solver:
 		check = checkIsSolvable.isSolvable(self.size, self.first, self.goal.grid)
 		if (check == False):
 			print("\033[1;31mSorry, this N-Puzzle is Unsolvable\033[m")
-			self.sayGoodbye()
+			print(self.sayGoodbye())
 			exit()
 		else:
 			print ("\033[1;32mThis N-Puzzle is solvable\033[m")
 
-	def start(self):
-		answer = 'Y'
+	def start(self, interface):
+		if not interface:
+			print(self.sayHello())
+			answer = 'Y'
 		self.size, self.first = self.parser()
 		if self.size == 3:
-#			self.heuristicList.append(["Neural Network (train from manhattan linear-conflict dataset)", heuristic.manhattan_by_nn])
 			self.heuristicList.append(["Machine Learning By Neural Network", heuristic.uniform_by_nn])
-		self.askConfig()
+		self.askConfig(interface)
 		self.parseFile()
 		self.checkIsSolvable()
-		while answer in 'yY':
-			if self.solve():
-				self.printSolution()
-			#self.printNodes()
-			answer = self.askAgain()
-			if answer in "yY":
-				self.askConfig()
-				self.reinit()
-		self.sayGoodbye()
-	
+		if not interface:
+			while answer in 'yY':
+				if self.solve():
+					self.printSolution()
+				answer = self.askAgain()
+				if answer in "yY":
+					self.askConfig(interface)
+					self.reinit()
+			print(self.sayGoodbye())
+		else:
+			self.window.start(self.size, self.first, self.goal, self.algoList, self.heuristicList) #ajouter dans start les event souris
+			
 	def getPathFromStart(self, node):
 		path = []
 		step = 0
@@ -217,7 +228,7 @@ class Solver:
 			node = node.parent
 			step += 1
 		return (reversed(path), step)
-
+	
 	def getGoalPoint(self, n):
 		return self.goalPoints[n]
 
